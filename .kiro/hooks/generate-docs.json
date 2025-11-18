@@ -1,0 +1,10 @@
+{
+  "name": "Generate Documentation",
+  "description": "Generate or update JSDoc comments for functions and classes",
+  "trigger": {
+    "type": "manual"
+  },
+  "prompt": "Review the current file and add or update JSDoc comments for all public functions, classes, and interfaces. Follow TypeScript documentation best practices.",
+  "autoRun": false,
+  "enabled": true
+}

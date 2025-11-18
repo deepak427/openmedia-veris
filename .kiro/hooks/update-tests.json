@@ -1,0 +1,11 @@
+{
+  "name": "Update Tests",
+  "description": "Suggest test updates when modifying crawler or agent code",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "services/*/src/{crawlers,agents}/**/*.ts"
+  },
+  "prompt": "Review the changes in this file and suggest if any tests need to be updated or created. Focus on edge cases and error handling.",
+  "autoRun": false,
+  "enabled": true
+}

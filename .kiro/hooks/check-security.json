@@ -1,0 +1,10 @@
+{
+  "name": "Security Check",
+  "description": "Check for security issues like exposed API keys or SQL injection vulnerabilities",
+  "trigger": {
+    "type": "manual"
+  },
+  "prompt": "Scan the entire codebase for security vulnerabilities including: exposed API keys, SQL injection risks, XSS vulnerabilities, insecure dependencies, and improper error handling that might leak sensitive information.",
+  "autoRun": false,
+  "enabled": true
+}

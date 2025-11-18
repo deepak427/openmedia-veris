@@ -1,0 +1,11 @@
+{
+  "name": "Validate on Save",
+  "description": "Automatically check for TypeScript errors and lint issues when saving files",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "**/*.ts"
+  },
+  "prompt": "Check this file for TypeScript errors, linting issues, and ensure it follows our project standards. If there are any issues, fix them automatically.",
+  "autoRun": true,
+  "enabled": true
+}

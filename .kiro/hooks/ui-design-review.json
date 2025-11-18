@@ -1,0 +1,11 @@
+{
+  "name": "UI Design Review",
+  "description": "Review UI components for design system compliance, accessibility, and responsiveness",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "**/{components,pages,app}/**/*.{tsx,jsx,css,scss}"
+  },
+  "prompt": "Review this UI code for: 1) Design system compliance (colors, typography, spacing), 2) Accessibility (ARIA labels, keyboard navigation, contrast), 3) Responsiveness (mobile-first, breakpoints), 4) Professional appearance (animations, hover states, visual hierarchy). Suggest improvements to make it more luxurious and user-appealing.",
+  "autoRun": false,
+  "enabled": true
+}

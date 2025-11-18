@@ -1,0 +1,10 @@
+{
+  "name": "Pre-commit Check",
+  "description": "Run type checking and linting before committing code",
+  "trigger": {
+    "type": "manual"
+  },
+  "prompt": "Run TypeScript type checking and ESLint on all modified files. Report any errors or warnings that need to be fixed before committing.",
+  "autoRun": false,
+  "enabled": true
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Check Neon Schema",
+  "description": "Verify database schema and tables in Neon project",
+  "trigger": {
+    "type": "manual"
+  },
+  "prompt": "Use the Neon MCP tools to check the current database schema, list all tables, and verify that the crawled_content table exists with the correct structure.",
+  "autoRun": false,
+  "enabled": true
+}

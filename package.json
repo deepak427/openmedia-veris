@@ -1,0 +1,30 @@
+{
+  "name": "veris-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Veris - Real-time content analysis platform",
+  "scripts": {
+    "dev": "pnpm --filter crawler-service dev",
+    "build": "pnpm -r build",
+    "start": "pnpm --filter crawler-service start",
+    "clean": "pnpm -r clean",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"**/*.{ts,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,json,md}\"",
+    "typecheck": "pnpm -r exec tsc --noEmit"
+  },
+  "keywords": ["veris", "crawler", "content-analysis", "monorepo"],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1"
+  }
+}
