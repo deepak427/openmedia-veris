@@ -1,150 +1,81 @@
 # Veris Agent Service
 
-AI-powered content verification agent that analyzes and fact-checks information from text, images, and videos.
-
-## Overview
-
-The Veris Agent uses Google's Gemini AI to:
-- Analyze content from multiple formats (text, images, videos)
-- Extract verifiable claims and statements
-- Verify information using Google Search
-- Provide confidence scores and evidence
+AI fact-checking system using Google ADK that extracts, verifies, and stores claims.
 
 ## Architecture
 
-```
-Veris Agent (Root)
-├── Content Analyzer Agent
-│   ├── analyze_text_content()
-│   ├── analyze_image_content()
-│   └── analyze_video_content()
-└── Fact Checker Agent
-    ├── search_google()
-    └── verify_claim()
-```
+**Root Agent (Veris)** orchestrates three sub-agents:
+1. **Claim Extraction Agent** - Extracts verifiable claims from content
+2. **Verify Claim Agent** - Fact-checks claims using Google Search
+3. **Save Verified Claim Agent** - Stores verification results to database
 
 ## Setup
 
-### 1. Install Dependencies
-
 ```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-### 2. Configure Environment
-
-Copy `.env.example` to `.env` and add your API keys:
-
-```bash
+# Configure environment
 cp .env.example .env
+# Edit .env with your credentials
 ```
 
-Required API keys:
-- **GEMINI_API_KEY**: Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
-- **GOOGLE_SEARCH_API_KEY**: Get from [Google Cloud Console](https://console.cloud.google.com/)
-- **GOOGLE_SEARCH_ENGINE_ID**: Create at [Programmable Search Engine](https://programmablesearchengine.google.com/)
+### Environment Variables
 
-### 3. Usage
+```env
+GEMINI_MODEL=gemini-2.0-flash-exp
+GEMINI_API_KEY=your_api_key
+NEON_PROJECT_ID=your_project_id
+NEON_DATABASE_NAME=neondb
+DATABASE_URL=postgresql://user:pass@host/db
+```
+
+## Usage
 
 ```python
-from agent_service.agent import root_agent
+from agent_service import root_agent
 
-# Analyze and verify content
-result = root_agent.run({
+content = {
+    "source": "BBC News",
+    "url": "https://example.com/article",
     "content_type": "text",
-    "text": "Your content here",
-    "image_url": "optional_image_url",
-    "video_url": "optional_video_url"
-})
-
-print(result)
-```
-
-## Agent Capabilities
-
-### Content Analyzer Agent
-
-Extracts information from:
-- **Text**: Claims, context, sentiment
-- **Images**: Visual elements, OCR text, objects
-- **Videos**: Transcription, key frames, speakers
-
-### Fact Checker Agent
-
-Verifies claims by:
-- Searching Google for evidence
-- Prioritizing reliable sources (.gov, .edu, established media)
-- Cross-referencing multiple sources
-- Providing confidence scores
-
-## Output Format
-
-```json
-{
-  "content_summary": "Brief summary",
-  "extracted_claims": [
-    {
-      "claim": "Specific claim",
-      "category": "health|politics|science|technology|general",
-      "confidence": 0.85,
-      "verification_status": "verified|false|unverified|misleading",
-      "evidence": ["Evidence point 1", "Evidence point 2"],
-      "sources": ["https://source1.com", "https://source2.com"]
-    }
-  ],
-  "overall_assessment": "Summary of findings",
-  "metadata": {
-    "content_type": "text|image|video|mixed",
-    "analysis_timestamp": "2024-01-01T00:00:00Z",
-    "sources_checked": 5
-  }
+    "raw_text": "Your content here..."
 }
+
+result = root_agent.run(content)
 ```
 
-## Integration with Crawler Service
+## Database Schema
 
-The agent service is designed to work with the crawler service:
+Saves to `crawled_content` table:
+- `verification_status`: verified/false/partially_true/unverifiable/disputed
+- `confidence`: 0-100 score
+- `evidence`: Summary of findings
+- `verification_sources`: JSONB array of source URLs
 
-```typescript
-// In crawler service
-import { analyzeContent } from './agents/claimExtractorAgent';
+## Claim Categories
 
-const result = await analyzeContent({
-  text: crawledContent.text,
-  images: crawledContent.images,
-  videos: crawledContent.videos
-});
+- health, politics, science, technology, finance, general
+
+## Confidence Scores
+
+- 90-100: Very strong evidence
+- 70-89: Strong evidence
+- 50-69: Moderate evidence
+- 30-49: Weak evidence
+- 0-29: Very weak evidence
+
+## Project Structure
+
 ```
-
-## Development
-
-### Adding New Tools
-
-1. Create tool function in sub-agent file
-2. Add to agent's tools list
-3. Update prompt with tool description
-
-### Testing
-
-```bash
-python -m pytest tests/
+agent_service/
+├── agent.py                           # Root agent
+├── prompt.py                          # Root prompt
+├── database/                          # Database module
+│   ├── client.py                      # DB client
+│   └── operations.py                  # DB operations
+└── sub_agents/
+    ├── claim_extraction_agent/
+    ├── verify_claim_agent/
+    └── save_verified_claim_agent/
 ```
-
-## API Keys Setup Guide
-
-### Gemini API Key
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Click "Create API Key"
-3. Copy and add to `.env`
-
-### Google Search API
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable "Custom Search API"
-3. Create credentials (API Key)
-4. Create a [Programmable Search Engine](https://programmablesearchengine.google.com/)
-5. Get the Search Engine ID
-6. Add both to `.env`
-
-## License
-
-MIT
