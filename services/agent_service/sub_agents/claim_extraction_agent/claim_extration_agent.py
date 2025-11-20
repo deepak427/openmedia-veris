@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration constants
 GEMINI_MODEL = os.getenv("GEMINI_MODEL_MEDIUM", "gemini-2.5-pro")
-DESCRIPTION = "Extract atomic, verifiable, public-interest claims from text or media URLs (image/video). Analyzes content at provided URLs, filters trivial statements, rewrites claims as standalone facts."
+DESCRIPTION = "Extract atomic, verifiable, public-interest claims from text, embedded images, or media URLs. Uses vision capabilities to analyze images/videos, filters trivial statements, rewrites claims as standalone facts."
 
 # --- Claim Extraction Agent ---
 claim_extraction_agent = None
