@@ -7,8 +7,8 @@ from . import prompt
 logger = logging.getLogger(__name__)
 
 # Configuration constants
-GEMINI_MODEL = os.getenv("GEMINI_MODEL_ROOT", "gemini-2.5-flash")
-DESCRIPTION = "find ALL atomic, verifiable factual claims in the content (text/images/videos/mixed). Extraction must be high-recall, atomicization of multi-part statements."
+GEMINI_MODEL = os.getenv("GEMINI_MODEL_MEDIUM", "gemini-2.5-pro")
+DESCRIPTION = "Extract atomic, verifiable, public-interest claims from text or media URLs (image/video). Analyzes content at provided URLs, filters trivial statements, rewrites claims as standalone facts."
 
 # --- Claim Extraction Agent ---
 claim_extraction_agent = None
