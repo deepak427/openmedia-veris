@@ -3,6 +3,7 @@ import os
 from google.adk.agents import LlmAgent
 from google.adk.tools.agent_tool import AgentTool
 from . import prompt
+from .sub_agents.media_upload_agent.media_upload_agent import media_upload_agent
 from .sub_agents.claim_extraction_agent.claim_extration_agent import claim_extraction_agent
 from .sub_agents.verify_claim_agent.verify_claim_agent import verify_claim_agent
 from .sub_agents.save_verified_claim_agent.save_verified_claim_agent import save_verified_claim_agent
@@ -11,7 +12,7 @@ from .database import db_client
 logger = logging.getLogger(__name__)
 
 GEMINI_MODEL = os.getenv("GEMINI_MODEL_ROOT", "gemini-2.5-flash")
-DESCRIPTION = "receive content → call extractor → iterate verification per claim → call save agent → produce summary."
+DESCRIPTION = "Orchestrate fact-checking pipeline: extract claims → verify each claim → save results. Handles text/image/video content through specialized sub-agents."
 
 
 def initialize_database():
@@ -33,7 +34,7 @@ def initialize_database():
 
 root_agent = None
 
-if claim_extraction_agent and verify_claim_agent and save_verified_claim_agent:
+if media_upload_agent and claim_extraction_agent and verify_claim_agent and save_verified_claim_agent:
     db_initialized = initialize_database()
     
     if db_initialized:
@@ -43,6 +44,7 @@ if claim_extraction_agent and verify_claim_agent and save_verified_claim_agent:
             description=DESCRIPTION,
             instruction=prompt.VERIS_AGENT_PROMPT,
             tools=[
+                AgentTool(media_upload_agent),
                 AgentTool(claim_extraction_agent), 
                 AgentTool(verify_claim_agent),
                 AgentTool(save_verified_claim_agent)

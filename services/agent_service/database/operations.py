@@ -23,21 +23,31 @@ def save_verified_claim(
     verification_status: str,
     confidence: int,
     evidence: str,
-    sources: List[str]
+    sources: List[str],
+    media_references: List[Dict[str, Any]] = None,
+    raw_text: str = None,
+    images: List[str] = None,
+    videos: List[str] = None,
+    metadata: Dict[str, Any] = None
 ) -> Dict[str, Any]:
     """
-    Save verified claim to database
+    Save verified claim to database with full context
     
     Args:
         source: Original content source name
-        url: Original content URL
-        content_type: Type of content (text/image/video/mixed)
+        url: Original content URL (or media URL if image/video)
+        content_type: Type of content (text|image|video) - NEVER mixed
         claim: The claim text
         category: Claim category
         verification_status: Verification result
         confidence: Confidence score (0-100)
         evidence: Evidence summary
-        sources: List of source URLs
+        sources: List of source URLs used for verification
+        media_references: Media references from verification
+        raw_text: Original article text (only for content_type=text)
+        images: Image URL list (only for content_type=image, single URL)
+        videos: Video URL list (only for content_type=video, single URL)
+        metadata: Original content metadata (title, author, date, etc.)
         
     Returns:
         dict: Success status and message
@@ -45,10 +55,19 @@ def save_verified_claim(
     try:
         claim_id = hashlib.md5(f"{url}_{claim}".encode()).hexdigest()[:32]
         
+        # Prepare JSON fields
+        sources_json = json.dumps(sources) if sources else '[]'
+        media_json = json.dumps(media_references) if media_references else '[]'
+        images_json = json.dumps(images) if images else '[]'
+        videos_json = json.dumps(videos) if videos else '[]'
+        metadata_json = json.dumps(metadata) if metadata else '{}'
+        
+        # Build SQL with all fields
         sql = f"""
             INSERT INTO crawled_content (
                 id, source, url, content_type, claim, category,
                 verification_status, confidence, evidence, verification_sources,
+                media_references, raw_text, images, videos, metadata,
                 created_at, updated_at
             ) VALUES (
                 '{escape_sql(claim_id)}',
@@ -60,7 +79,12 @@ def save_verified_claim(
                 '{escape_sql(verification_status)}',
                 {confidence},
                 '{escape_sql(evidence)}',
-                '{json.dumps(sources)}'::jsonb,
+                '{sources_json}'::jsonb,
+                '{media_json}'::jsonb,
+                {f"'{escape_sql(raw_text)}'" if raw_text else 'NULL'},
+                '{images_json}'::jsonb,
+                '{videos_json}'::jsonb,
+                '{metadata_json}'::jsonb,
                 '{datetime.utcnow().isoformat()}',
                 '{datetime.utcnow().isoformat()}'
             )
@@ -69,6 +93,11 @@ def save_verified_claim(
                 confidence = EXCLUDED.confidence,
                 evidence = EXCLUDED.evidence,
                 verification_sources = EXCLUDED.verification_sources,
+                media_references = EXCLUDED.media_references,
+                raw_text = COALESCE(EXCLUDED.raw_text, crawled_content.raw_text),
+                images = COALESCE(EXCLUDED.images, crawled_content.images),
+                videos = COALESCE(EXCLUDED.videos, crawled_content.videos),
+                metadata = COALESCE(EXCLUDED.metadata, crawled_content.metadata),
                 updated_at = EXCLUDED.updated_at
         """
         

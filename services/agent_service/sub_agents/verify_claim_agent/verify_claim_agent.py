@@ -9,7 +9,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 GEMINI_MODEL = os.getenv("GEMINI_MODEL_LATEST", "gemini-3-pro-preview")
-DESCRIPTION = "fact-check claims by searching & analyzing evidence, then output verdict, confidence, evidence summary, and sources."
+DESCRIPTION = "Verify claims using tiered source strategy (gov/academic → trusted media → experts). Returns verdict, confidence, evidence summary, and source URLs."
 
 verify_claim_agent = None
 try:
