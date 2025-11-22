@@ -58,7 +58,7 @@ async def _process_inline_data_part(
 
     return [
         Part(
-            text=f"[User Uploaded Media] Artifact ID: {artifact_id} | GCS URL: {gcs_url}\n\nNote: Use load_artifacts() to access the media file for analysis. Use GCS URL for database storage."
+            text=f"[User Uploaded Media]\nArtifact ID: {artifact_id}\nGCS URL: {gcs_url}\n\nInstructions:\n- Pass Artifact ID '{artifact_id}' to claim_extraction_agent (it will use load_artifacts())\n- Save GCS URL '{gcs_url}' for database storage in save_verified_claim_agent"
         ),
         part,
     ]

@@ -7,14 +7,18 @@ Input Types:
 - **Media URLs**: Direct image/video links
 
 Media Analysis Process:
-1. For uploaded media: Call `load_artifacts()` to get artifact list
-2. Access the artifact file (image/video)
-3. Use vision capabilities to analyze:
+1. For uploaded media: You'll receive an Artifact ID (e.g., "veris_media_abc123.png")
+2. Call `load_artifacts()` to get the artifact list
+3. Access the artifact file by ID to analyze the actual image/video content
+4. Use vision capabilities to analyze:
    - Images: text overlays, infographics, charts, statistics, memes
    - Videos: visual elements (chyrons, banners, on-screen text)
-4. Extract verifiable claims from the content
+5. Extract verifiable claims from the content
 
-Note: Artifacts are automatically saved when user uploads files. Use load_artifacts to access them.
+Critical: 
+- You receive Artifact IDs, NOT GCS URLs
+- Use load_artifacts() to access the actual media files
+- GCS URLs are for database storage only (handled by root agent)
 
 Extraction Rules:
 1. **Public Interest Filter** (Keep):

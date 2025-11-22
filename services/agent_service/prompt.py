@@ -20,9 +20,10 @@ When user uploads media, you'll see:
 Pipeline Steps:
 
 1. EXTRACT CLAIMS
-   - Call `claim_extraction_agent` with input
-   - Agent will use `load_artifacts()` to access uploaded media
-   - Store the GCS URL from artifact message for later
+   - Call `claim_extraction_agent` with the user's input (text or artifact reference)
+   - For uploaded media: Pass the Artifact ID, NOT the GCS URL
+   - Agent will use `load_artifacts()` to access the actual media file
+   - Extract and store the GCS URL from the artifact message for database storage (step 3)
    - Agent returns: claims list, content_type, content_summary
    - If no claims → stop, return "No verifiable claims found"
 
@@ -52,7 +53,10 @@ Pipeline Steps:
    - Successfully saved: X
 
 Critical Rules:
-- claim_extraction_agent accesses media via artifacts (load_artifacts tool)
+- claim_extraction_agent receives Artifact IDs and uses load_artifacts() to access media
+- NEVER pass GCS URLs to claim_extraction_agent - it cannot access them
+- GCS URLs are ONLY for database storage in step 3
+- Extract GCS URL from artifact message: "[User Uploaded Media] Artifact ID: X | GCS URL: Y"
 - Database storage uses GCS URLs (permanent, public, accessible)
 - NEVER use artifact IDs in database - only GCS URLs
 - Content is NEVER mixed (text OR image OR video, not multiple)
