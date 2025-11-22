@@ -34,8 +34,8 @@ def save_verified_claim(
     Save verified claim to database with full context
     
     Args:
-        source: Original content source name
-        url: Original content URL (or media URL if image/video)
+        source: Original content source name (e.g., "BBC News", "User Upload")
+        url: Original source URL (article link, social media URL, or "user_upload" for uploaded files)
         content_type: Type of content (text|image|video) - NEVER mixed
         claim: The claim text
         category: Claim category
@@ -45,12 +45,16 @@ def save_verified_claim(
         sources: List of source URLs used for verification
         media_references: Media references from verification
         raw_text: Original article text (only for content_type=text)
-        images: Image URL list (only for content_type=image, single URL)
-        videos: Video URL list (only for content_type=video, single URL)
+        images: Image URL list (GCS URLs for uploaded images, or original URLs)
+        videos: Video URL list (GCS URLs for uploaded videos, or original URLs)
         metadata: Original content metadata (title, author, date, etc.)
         
     Returns:
         dict: Success status and message
+        
+    Note:
+        - url: Source/origin of content (article link or "user_upload")
+        - images/videos: Actual media URLs (GCS URLs for uploaded, original URLs for linked)
     """
     try:
         claim_id = hashlib.md5(f"{url}_{claim}".encode()).hexdigest()[:32]

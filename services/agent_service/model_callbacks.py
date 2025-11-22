@@ -10,7 +10,7 @@ from google.cloud import storage
 
 logger = logging.getLogger(__name__)
 
-GCP_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "")
+GCP_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "veris-478615")
 GOOGLE_CLOUD_BUCKET = os.getenv("GOOGLE_CLOUD_BUCKET", "veris-media")
 
 
@@ -93,12 +93,12 @@ async def _upload_to_gcs(part: Part, artifact_id: str) -> str:
         blob.make_public()
 
         public_url = blob.public_url
-        logger.info(f"☁️ Uploaded to GCS: {public_url}")
+        logger.info(f"Uploaded to GCS: {public_url}")
 
         return public_url
 
     except Exception as e:
-        logger.error(f"❌ GCS upload failed: {e}")
+        logger.error(f"GCS upload failed: {e}")
         return f"artifact://{artifact_id}"
 
 
