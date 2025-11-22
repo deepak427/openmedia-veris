@@ -35,14 +35,14 @@ Pipeline Steps:
 3. SAVE TO DATABASE
    - For EACH verified claim:
      - Call `save_verified_claim_agent` with:
-       * source: "User Upload" or source name
-       * url: GCS URL (for media) or original URL
+       * source: "User Upload" (for uploaded media) or source name (e.g., "BBC News")
+       * url: "user_upload" (for uploaded media) or original article/post URL
        * content_type: "text" | "image" | "video"
        * claim, category, verification_status, confidence, evidence, sources
        * Content-specific fields:
          - text → raw_text="article content"
-         - image → images='["https://storage.googleapis.com/..."]' (GCS URL)
-         - video → videos='["https://storage.googleapis.com/..."]' (GCS URL)
+         - image → images='["https://storage.googleapis.com/..."]' (GCS URL from artifact message)
+         - video → videos='["https://storage.googleapis.com/..."]' (GCS URL from artifact message)
      - Confirm success before continuing
 
 4. FINAL REPORT

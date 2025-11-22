@@ -34,8 +34,8 @@ def save_claim_to_database(
     Save verified claim to Neon database with full context
     
     Args:
-        source: Original content source name
-        url: Original content URL (or media URL if image/video)
+        source: Original content source name (e.g., "BBC News", "User Upload")
+        url: Original source URL (article link, social media URL, or "user_upload")
         content_type: Type of content (text|image|video) - NEVER mixed
         claim: The verified claim text
         category: Claim category (health|politics|science|technology|finance|general)
@@ -45,12 +45,16 @@ def save_claim_to_database(
         sources: Verification source URLs as JSON string array
         media_references: Media references as JSON string array
         raw_text: Original article text (only for text content)
-        images: Image URL as JSON array (only for image content, e.g., '["https://..."]')
-        videos: Video URL as JSON array (only for video content, e.g., '["https://..."]')
+        images: Image URL as JSON array (GCS URL for uploaded, e.g., '["https://storage.googleapis.com/..."]')
+        videos: Video URL as JSON array (GCS URL for uploaded, e.g., '["https://storage.googleapis.com/..."]')
         metadata: Original content metadata as JSON object (optional)
         
     Returns:
         dict: Success status with message and claim_id
+        
+    Note:
+        - url: Source/origin ("user_upload" for uploaded media, article URL for text)
+        - images/videos: Actual media URLs (GCS URLs for uploaded files)
     """
     try:
         # Parse JSON strings
