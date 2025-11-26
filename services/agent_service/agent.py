@@ -5,7 +5,6 @@ from google.adk.tools.agent_tool import AgentTool
 from . import prompt
 from .model_callbacks import before_model_modifier
 from .sub_agents.claim_extraction_agent.claim_extration_agent import claim_extraction_agent
-from .sub_agents.url_claim_extraction_agent.url_claim_extraction_agent import url_claim_extraction_agent
 from .sub_agents.verify_claim_agent.verify_claim_agent import verify_claim_agent
 from .sub_agents.save_verified_claim_agent.save_verified_claim_agent import save_verified_claim_agent
 from .database import db_client
@@ -13,7 +12,7 @@ from .database import db_client
 logger = logging.getLogger(__name__)
 
 GEMINI_MODEL = os.getenv("GEMINI_MODEL_ROOT", "gemini-2.5-flash")
-DESCRIPTION = "Orchestrate fact-checking pipeline: extract claims → verify → save. Routes to appropriate extraction agent based on input type (uploaded media, URLs, or text)."
+DESCRIPTION = "Orchestrate fact-checking pipeline: extract claims → verify → save. Handles uploaded media (images/videos) and text input."
 
 
 def initialize_database():
@@ -35,7 +34,7 @@ def initialize_database():
 
 root_agent = None
 
-if claim_extraction_agent and url_claim_extraction_agent and verify_claim_agent and save_verified_claim_agent:
+if claim_extraction_agent and verify_claim_agent and save_verified_claim_agent:
     db_initialized = initialize_database()
     
     if db_initialized:
@@ -46,7 +45,6 @@ if claim_extraction_agent and url_claim_extraction_agent and verify_claim_agent 
             instruction=prompt.VERIS_AGENT_PROMPT,
             tools=[
                 AgentTool(claim_extraction_agent),
-                AgentTool(url_claim_extraction_agent),
                 AgentTool(verify_claim_agent),
                 AgentTool(save_verified_claim_agent)
             ],

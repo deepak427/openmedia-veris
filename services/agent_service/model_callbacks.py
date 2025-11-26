@@ -42,34 +42,28 @@ async def _process_inline_data_part(
 ) -> List[Part]:
     """Process inline data parts (user-uploaded images/videos).
     
-    1. Saves as artifact in ADK (for claim_extraction_agent to access)
-    2. Uploads to GCS (for database storage)
-    3. Returns parts with artifact marker and GCS URL
+    1. Saves as artifact in ADK
+    2. Uploads to GCS for database storage
+    3. Returns text marker with GCS URL + inline media for analysis
     """
     artifact_id = _generate_artifact_id(part)
     mime_type = part.inline_data.mime_type
     display_name = part.inline_data.display_name or "unknown"
     
-    logger.info(f"📤 Processing uploaded media: {display_name} ({mime_type})")
-    logger.info(f"🔑 Generated artifact ID: {artifact_id}")
+    logger.info(f"📤 Processing: {display_name} ({mime_type})")
+    logger.info(f"🔑 Artifact ID: {artifact_id}")
 
-    # Save artifact if it doesn't exist
+    # Save artifact
     if artifact_id not in await callback_context.list_artifacts():
         await callback_context.save_artifact(filename=artifact_id, artifact=part)
         logger.info(f"💾 Saved artifact: {artifact_id}")
-    else:
-        logger.info(f"♻️ Artifact already exists: {artifact_id}")
 
-    # Upload to GCS for permanent storage
+    # Upload to GCS
     gcs_url = await _upload_to_gcs(part, artifact_id)
     logger.info(f"☁️ GCS URL: {gcs_url}")
 
-    # Return ONLY the text instruction, NOT the inline media
-    # This forces sub-agents to use load_artifacts() instead of analyzing inline data
     return [
-        Part(
-            text=f"[User Uploaded Media]\nFile: {display_name}\nArtifact ID: {artifact_id}\nGCS URL: {gcs_url}\n\nUser uploaded a {mime_type} file. To analyze it, use load_artifacts(artifact_ids=['{artifact_id}'])."
-        ),
+        Part(text=f"[User Uploaded Media]\nFile: {display_name}\nArtifact ID: {artifact_id}\nGCS URL: {gcs_url}"),
     ]
 
 
