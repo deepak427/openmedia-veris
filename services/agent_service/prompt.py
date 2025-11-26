@@ -13,16 +13,19 @@ Input Types (ONE per request):
 Media Upload (Automatic):
 When user uploads media, you'll see:
 "[User Uploaded Media]
-Artifact ID: veris_media_abc123.png
-GCS URL: https://storage.googleapis.com/veris-media/images/..."
+File: filename.mp4
+Artifact ID: veris_media_abc123.mp4
+GCS URL: https://storage.googleapis.com/veris-media/videos/...
+User uploaded a video/mpeg file. To analyze it, use load_artifacts(artifact_ids=['veris_media_abc123.mp4'])."
 
 Pipeline Steps:
 
 1. EXTRACT CLAIMS - Route to correct agent:
 
    A. **IF Uploaded Media** (you see "[User Uploaded Media]"):
-      - Extract the Artifact ID (e.g., "veris_media_abc123.png")
-      - Call `claim_extraction_agent` with: "Analyze artifact: veris_media_abc123.png"
+      - Extract the Artifact ID (e.g., "veris_media_abc123.mp4")
+      - Call `claim_extraction_agent` with: "Analyze artifact: veris_media_abc123.mp4"
+      - The agent will use load_artifacts() to access the actual file
       - Store the GCS URL for database storage (step 3)
    
    B. **IF URL Provided** (user gives http:// or https:// link):

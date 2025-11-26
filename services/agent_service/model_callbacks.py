@@ -47,20 +47,29 @@ async def _process_inline_data_part(
     3. Returns parts with artifact marker and GCS URL
     """
     artifact_id = _generate_artifact_id(part)
+    mime_type = part.inline_data.mime_type
+    display_name = part.inline_data.display_name or "unknown"
+    
+    logger.info(f"📤 Processing uploaded media: {display_name} ({mime_type})")
+    logger.info(f"🔑 Generated artifact ID: {artifact_id}")
 
     # Save artifact if it doesn't exist
     if artifact_id not in await callback_context.list_artifacts():
         await callback_context.save_artifact(filename=artifact_id, artifact=part)
         logger.info(f"💾 Saved artifact: {artifact_id}")
+    else:
+        logger.info(f"♻️ Artifact already exists: {artifact_id}")
 
     # Upload to GCS for permanent storage
     gcs_url = await _upload_to_gcs(part, artifact_id)
+    logger.info(f"☁️ GCS URL: {gcs_url}")
 
+    # Return ONLY the text instruction, NOT the inline media
+    # This forces sub-agents to use load_artifacts() instead of analyzing inline data
     return [
         Part(
-            text=f"[User Uploaded Media]\nArtifact ID: {artifact_id}\nGCS URL: {gcs_url}\n\nInstructions:\n- Pass Artifact ID '{artifact_id}' to claim_extraction_agent (it will use load_artifacts())\n- Save GCS URL '{gcs_url}' for database storage in save_verified_claim_agent"
+            text=f"[User Uploaded Media]\nFile: {display_name}\nArtifact ID: {artifact_id}\nGCS URL: {gcs_url}\n\nUser uploaded a {mime_type} file. To analyze it, use load_artifacts(artifact_ids=['{artifact_id}'])."
         ),
-        part,
     ]
 
 
