@@ -1,7 +1,7 @@
 import logging
 import os
 from google.adk.agents import LlmAgent
-from google.adk.tools import load_artifacts, googlesearch 
+from google.adk.tools import load_artifacts, google_search
 from . import prompt
 
 logger = logging.getLogger(__name__)
@@ -17,6 +17,6 @@ claim_extraction_agent = LlmAgent(
     description=DESCRIPTION,
     instruction=prompt.CLAIM_EXTRACTION_PROMPT,
     # Now it has EYES (load_artifacts) and a BROWSER (googlesearch)
-    tools=[load_artifacts, googlesearch], 
+    tools=[load_artifacts, google_search], 
     output_key="extracted_claims",
 )
