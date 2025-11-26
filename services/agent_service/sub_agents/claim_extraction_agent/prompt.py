@@ -7,9 +7,16 @@ Input Types:
 - **Media URLs**: Direct image/video links
 
 Media Analysis Process:
-1. For uploaded media: You'll receive an Artifact ID (e.g., "veris_media_abc123.png")
-2. Call `load_artifacts()` to get the artifact list
-3. Access the artifact file by ID to analyze the actual image/video content
+1. For uploaded media: You'll receive an Artifact ID (e.g., "veris_media_abc123.png")# Add to CLAIM_EXTRACTION_PROMPT (machine-oriented section)
+If you receive a machine-parsable artifact metadata string like:
+{"artifact_id":"veris_media_abc123.mp4","gcs_url":"https://storage.googleapis.com/...","mime_type":"video/mp4"}
+
+Then:
+1) Parse the JSON.
+2) Call the tool load_artifacts with a list containing the artifact_id:
+   Example tool call: load_artifacts(artifact_ids=["veris_media_abc123.mp4"])
+3) Analyze the returned file contents (video frames / audio / on-screen text) and extract claims.
+Do NOT attempt to use the GCS URL for loading the file. Use only load_artifacts() on artifact_id.
 4. Use vision capabilities to analyze:
    - Images: text overlays, infographics, charts, statistics, memes
    - Videos: visual elements (chyrons, banners, on-screen text)

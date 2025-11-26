@@ -37,31 +37,39 @@ async def before_model_modifier(
         content.parts = modified_parts
 
 
+# --- replace the existing _process_inline_data_part with this ---
 async def _process_inline_data_part(
     part: Part, callback_context: CallbackContext
 ) -> List[Part]:
     """Process inline data parts (user-uploaded images/videos).
-    
-    1. Saves as artifact in ADK (for claim_extraction_agent to access)
-    2. Uploads to GCS (for database storage)
-    3. Returns parts with artifact marker and GCS URL
+
+    Produces a compact, machine-parsable marker Part containing:
+      { "artifact_id": "...", "gcs_url": "..." }
+    and avoids returning the raw binary part or long human instructions.
+
+    This prevents the LLM from receiving a verbose instructions block it might
+    hallucinate from or incorrectly hand to tools.
     """
     artifact_id = _generate_artifact_id(part)
 
     # Save artifact if it doesn't exist
-    if artifact_id not in await callback_context.list_artifacts():
+    saved_artifacts = await callback_context.list_artifacts()
+    if artifact_id not in saved_artifacts:
         await callback_context.save_artifact(filename=artifact_id, artifact=part)
         logger.info(f"💾 Saved artifact: {artifact_id}")
 
     # Upload to GCS for permanent storage
     gcs_url = await _upload_to_gcs(part, artifact_id)
 
-    return [
-        Part(
-            text=f"[User Uploaded Media]\nArtifact ID: {artifact_id}\nGCS URL: {gcs_url}\n\nInstructions:\n- Pass Artifact ID '{artifact_id}' to claim_extraction_agent (it will use load_artifacts())\n- Save GCS URL '{gcs_url}' for database storage in save_verified_claim_agent"
-        ),
-        part,
-    ]
+    # Return a single compact, machine-readable part (JSON-ish text)
+    metadata_text = (
+        f"{{\"artifact_id\":\"{artifact_id}\","
+        f"\"gcs_url\":\"{gcs_url}\","
+        f"\"mime_type\":\"{part.inline_data.mime_type}\"}}"
+    )
+
+    return [Part(text=metadata_text)]
+
 
 
 async def _upload_to_gcs(part: Part, artifact_id: str) -> str:
