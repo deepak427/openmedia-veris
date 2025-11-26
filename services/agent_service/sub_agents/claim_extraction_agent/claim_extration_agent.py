@@ -7,7 +7,7 @@ from . import prompt
 logger = logging.getLogger(__name__)
 
 GEMINI_MODEL = os.getenv("GEMINI_MODEL_MEDIUM", "gemini-2.5-pro")
-DESCRIPTION = "Extract atomic, verifiable claims from text or uploaded media (artifacts). Uses vision capabilities to analyze images/videos."
+DESCRIPTION = "Extract atomic, verifiable claims from text or uploaded media. Uses load_artifacts to access uploaded images/videos."
 
 claim_extraction_agent = None
 try:
