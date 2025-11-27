@@ -16,8 +16,8 @@ try:
         name="claim_extraction_agent",
         description=DESCRIPTION,
         instruction=prompt.CLAIM_EXTRACTION_PROMPT,
-        tools=[load_artifacts],
         output_key="extracted_claims",
+        tools=[load_artifacts],
     )
     logger.info(f"✅ Agent '{claim_extraction_agent.name}' created using model '{GEMINI_MODEL}'.")
 except Exception as e:

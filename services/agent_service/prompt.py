@@ -9,18 +9,19 @@ Input Types:
 - Text: Articles, social media posts, transcripts
 - Uploaded Media: Images/videos (automatically saved as artifacts and uploaded to GCS)
 
-When user uploads media, you'll see:
+When user uploads media, you'll see something like:
 "[User Uploaded Media]
 File: filename.mp4
 Artifact ID: veris_media_abc123.mp4
 GCS URL: https://storage.googleapis.com/veris-media/videos/..."
+Note that this is example actualy file names and url may vary.
 
 Pipeline Steps:
 
 1. EXTRACT CLAIMS
    - For uploaded media: Extract Artifact ID from message and call `claim_extraction_agent` with it
    - For text: Call `claim_extraction_agent` with the text directly
-   - Agent will use load_artifacts() to access uploaded media
+   - Claim extractor agent will use load_artifacts() to access uploaded media
    - Agent returns: claims list, content_type, content_summary
    - If no claims → stop, return "No verifiable claims found"
 
