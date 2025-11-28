@@ -1,8 +1,0 @@
-{
-  "/api/claims/route": "app/api/claims/route.js",
-  "/page": "app/page.js",
-  "/submit/page": "app/submit/page.js",
-  "/notifications/page": "app/notifications/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/search/page": "app/search/page.js"
-}
