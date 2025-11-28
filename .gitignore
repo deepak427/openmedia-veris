@@ -108,3 +108,6 @@ yarn-error.log*
 *.temp
 .temp/
 .tmp/
+
+# Kiro secure keys
+.kiro/settings/mcp.json
